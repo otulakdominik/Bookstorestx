@@ -20,7 +20,7 @@ class BookForm(forms.ModelForm):
         queryset=IndustryIdentifiers.objects.all(),
         required=True
     )
-    imageLink = forms.URLField(label='URL', initial='http://')
+    imageLink = forms.URLField(label='Image Link', initial='http://')
 
     class Meta:
         model = Book

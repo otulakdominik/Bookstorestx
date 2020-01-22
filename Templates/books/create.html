@@ -5,7 +5,26 @@
   <a href="{% url 'books:list' %}">Books</a>
   <form action="" method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    {% for field in form %}
+    <div class="row">
+      <div class="col-md-2">
+        {{ field.label_tag }}
+        {% if field == form.authors %}
+          <a href="{% url 'books:create_author' %}">Add new author</a>
+        {% endif %}
+        {% if field == form.identifiers %}
+          <a href="{% url 'books:create_identifiers' %}">Add new indetifiers</a>
+        {% endif %}
+          {% for error in field.errors %}
+           <div>
+             <div>{{error}}</div>
+           </div>
+          {% endfor %}
+       </div><div>
+         {{ field }}
+       </div>
+    </div>
+  {% endfor %}
     <input type="submit" value="Save" />
   </form>
 {% endblock content %}
