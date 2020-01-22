@@ -1,0 +1,47 @@
+{% extends "books/base.html" %}
+
+{% block content %}
+  <a href="{% url 'home' %}">Home</a>
+  <a href="{% url 'books:create' %}">Create Book</a>
+  <p></p>
+  {% for book in books %}
+    <a>
+        {{ book.title }}
+        {% for author in book.authors.all %}
+            {{ author }}
+        {% endfor %}
+        {{ book.released }}
+        {{ book.pageCount }}
+        {{ book.language}}
+        {% for IndustryIdentifiers in book.identifiers.all %}
+          {{ IndustryIdentifiers }}
+        {% endfor %}
+        <a href= {{ book.imageLink }}>image</a>
+    </a>
+    <p></p>
+  {% empty %}
+    <h1>No books found.</h1>
+  {% endfor %}
+
+  <div>
+    <span>
+      {% if is_paginated %}
+        <ul>
+        {% if page_obj.has_previous %}
+            <li>
+                <span><a href="?page={{ page_obj.previous_page_number }}">Previous</a></span>
+            </li>
+        {% endif %}
+            <li>
+                <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</span>
+            </li>
+        {% if page_obj.has_next %}
+            <li>
+                <span><a href="?page={{ page_obj.next_page_number }}">Next</a></span>
+            </li>
+        {% endif %}
+      {% endif %}
+    </span>
+  </div>
+
+{% endblock content %}
