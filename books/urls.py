@@ -1,5 +1,6 @@
-from . import views
 from django.urls import path
+from django.conf.urls import include
+from . import views
 
 
 app_name = 'books'
@@ -9,4 +10,6 @@ urlpatterns = [
     path('create', views.BookCreateView.as_view(), name='create'),
     path('create_author', views.AuthorCreateView.as_view(), name='create_author'),
     path('create_identifiers', views.IdentifiersCreateView.as_view(), name='create_identifiers'),
+    path('search', views.SearchResultsView.as_view(), name='search_results'),
+    path('data_search', views.DataSearchResultsView.as_view(), name='data_search_results'),
 ]

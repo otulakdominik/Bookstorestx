@@ -1,0 +1,20 @@
+{% extends "books/base.html" %}
+
+{% block content %}
+<ul>
+  {% for book in object_list %}
+    <li>
+        {{ book.title }}
+        {% for author in book.authors.all %}
+            {{ author }}
+        {% endfor %}
+        {{ book.released }}
+        {{ book.pageCount }}
+        {{ book.language}}
+        {% for IndustryIdentifiers in book.identifiers.all %}
+          {{ IndustryIdentifiers }}
+        {% endfor %}
+    </li>
+  {% endfor %}
+</ul>
+{% endblock content %}
