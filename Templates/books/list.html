@@ -3,6 +3,7 @@
 {% block content %}
   <a href="{% url 'home' %}">Home</a>
   <a href="{% url 'books:create' %}">Create Book</a>
+  <a href="{% url 'books:search_api' %}">Add books form google api</a>
 <form action="{% url 'books:search_results' %}" method="get">
   <input name="q" type="text" placeholder="Search...">
 </form>

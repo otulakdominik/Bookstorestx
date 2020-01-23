@@ -12,4 +12,5 @@ urlpatterns = [
     path('create_identifiers', views.IdentifiersCreateView.as_view(), name='create_identifiers'),
     path('search', views.SearchResultsView.as_view(), name='search_results'),
     path('data_search', views.DataSearchResultsView.as_view(), name='data_search_results'),
+    path('search_api', views.BookSearchApiGoogle.as_view(), name='search_api'),
 ]

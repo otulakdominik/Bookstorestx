@@ -1,5 +1,8 @@
 from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import ListView, CreateView
+from django.views import View
 from django.db.models import Q
 from .models import (
     Book,
@@ -10,7 +13,12 @@ from .forms import (
     BookForm,
     AuthorForm,
     IdentifiersForm,
+    SearchBookForm,
 )
+
+import re
+import requests
+import datetime
 
 
 class BookListView(ListView):
@@ -64,3 +72,68 @@ class DataSearchResultsView(ListView):
         object_list = Book.objects.filter(released__range=[start, end])
 
         return object_list
+
+
+class BookSearchApiGoogle(View):
+    form_class = SearchBookForm
+    template_name = 'books/search_api.html'
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
+    def search(self, value):
+        params = {'q': value}
+        google_books = requests.get(url="https://www.googleapis.com/books/v1/volumes", params=params)
+        books_json = google_books.json()
+        bookshelf = books_json['items']
+        return bookshelf
+
+    def add_book_to_library(self, bookshelf):
+
+        for book in bookshelf:
+            links = book['volumeInfo']['imageLinks']
+            date = book['volumeInfo']['publishedDate']
+
+            m = re.match(r'(\d+)(?:-(\d+)-(\d+))?', date[0])
+            m = m.groups('1')
+            fulldate = datetime.date(int(m[0]), int(m[1]), int(m[2]))
+
+            id_authors = []
+
+            for author in book['volumeInfo']['authors']:
+                obj, _ = Author.objects.get_or_create(
+                    name=author
+                )
+                id_authors.append(obj)
+
+            id_identifiers = []
+
+            for identifiers in book['volumeInfo']['industryIdentifiers']:
+                obj, _ = IndustryIdentifiers.objects.get_or_create(
+                    type=identifiers['type'],
+                    identifier=identifiers['identifier'],
+                )
+                id_identifiers.append(obj)
+
+            book, _ = Book.objects.get_or_create(
+                title=book['volumeInfo']['title'],
+                released=fulldate,
+                language=book['volumeInfo']['language'],
+                pageCount=book['volumeInfo']['pageCount'],
+                imageLink=links['thumbnail']
+            )
+
+            book.authors.set(id_authors)
+            book.identifiers.set(id_identifiers)
+            book.save()
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(self.request.POST)
+        if form.is_valid():
+            keyword = form.cleaned_data['keyword']
+            books = self.search(keyword)
+            self.add_book_to_library(books)
+            return HttpResponseRedirect(reverse_lazy('books:list'))
+
+        return reverse_lazy('search_api')

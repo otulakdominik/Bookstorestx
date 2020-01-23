@@ -42,3 +42,7 @@ class IdentifiersForm(forms.ModelForm):
     class Meta:
         model = IndustryIdentifiers
         fields = ('type', 'identifier',)
+
+
+class SearchBookForm(forms.Form):
+    keyword = forms.CharField()
