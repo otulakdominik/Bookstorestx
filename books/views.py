@@ -92,20 +92,26 @@ class BookSearchApiGoogle(View):
     def add_book_to_library(self, bookshelf):
 
         for book in bookshelf:
-            links = book['volumeInfo']['imageLinks']
+            if 'imageLinks' in  book['volumeInfo']:
+                links = book['volumeInfo']['imageLinks']
+            else:
+                links['thumbnail'] = 'http://none'
+
             date = book['volumeInfo']['publishedDate']
 
-            m = re.match(r'(\d+)(?:-(\d+)-(\d+))?', date[0])
+            m = re.match(r'(\d\d\d\d)(?:-(\d\d)-(\d\d))?', date)
             m = m.groups('1')
             fulldate = datetime.date(int(m[0]), int(m[1]), int(m[2]))
-
+            author_ex = True
             id_authors = []
-
-            for author in book['volumeInfo']['authors']:
-                obj, _ = Author.objects.get_or_create(
-                    name=author
-                )
-                id_authors.append(obj)
+            if 'authors' in book['volumeInfo']:
+                for author in book['volumeInfo']['authors']:
+                    obj, _ = Author.objects.get_or_create(
+                        name=author
+                    )
+                    id_authors.append(obj)
+            else:
+                author_ex = False
 
             id_identifiers = []
 
@@ -116,6 +122,10 @@ class BookSearchApiGoogle(View):
                 )
                 id_identifiers.append(obj)
 
+            if 'pageCount' not in book['volumeInfo']:
+                book['volumeInfo']['pageCount'] = 0
+
+
             book, _ = Book.objects.get_or_create(
                 title=book['volumeInfo']['title'],
                 released=fulldate,
@@ -123,8 +133,8 @@ class BookSearchApiGoogle(View):
                 pageCount=book['volumeInfo']['pageCount'],
                 imageLink=links['thumbnail']
             )
-
-            book.authors.set(id_authors)
+            if author_ex==True:
+                book.authors.set(id_authors)
             book.identifiers.set(id_identifiers)
             book.save()
 

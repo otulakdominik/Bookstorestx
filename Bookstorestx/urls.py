@@ -24,4 +24,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.HomeView.as_view(), name='home'),
     path('book/', include('books.urls', namespace='books')),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
