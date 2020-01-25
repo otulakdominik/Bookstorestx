@@ -30,7 +30,7 @@ SECRET_KEY = '-&htfpwj$&qjrvxv)dr=i^5ukx*gp)ak6^0)8leadl&vpjb^(@'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['bookstorestx.herokuapp.com']
 
 
 # Application definition
