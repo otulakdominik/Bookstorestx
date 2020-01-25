@@ -1,3 +1,4 @@
+Python == 3.8.1
 django == 2.2
 requests
 djangorestframework
