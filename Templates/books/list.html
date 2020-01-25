@@ -6,11 +6,12 @@
   <a href="{% url 'books:search_api' %}">Add books form google api</a>
 <form action="{% url 'books:search_results' %}" method="get">
   <input name="q" type="text" placeholder="Search...">
+  <input type="submit" value="search">
 </form>
 <form action="{% url 'books:data_search_results' %}" method="get">
-  <input name="s" type="text" placeholder="from data">
-  <input name="e" type="text" placeholder="to data">
-  <input type="submit" value="Save" />
+  <input name="s" type="text" placeholder="from data yyyy-mm-dd">
+  <input name="e" type="text" placeholder="to data yyyy-mm-dd">
+  <input type="submit" value="search" >
 </form>
   <p></p>
   {% for book in books %}
