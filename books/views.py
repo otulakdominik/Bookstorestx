@@ -97,11 +97,14 @@ class BookSearchApiGoogle(View):
             else:
                 links['thumbnail'] = 'http://none'
 
-            date = book['volumeInfo']['publishedDate']
+            if 'publishedDate' in book['volumeInfo']:
+                date = book['volumeInfo']['publishedDate']
 
-            m = re.match(r'(\d\d\d\d)(?:-(\d\d)-(\d\d))?', date)
-            m = m.groups('1')
-            fulldate = datetime.date(int(m[0]), int(m[1]), int(m[2]))
+                m = re.match(r'(\d\d\d\d)(?:-(\d\d)-(\d\d))?', date)
+                m = m.groups('1')
+                fulldate = datetime.date(int(m[0]), int(m[1]), int(m[2]))
+            else:
+                fulldate = '01-01-01'
             author_ex = True
             id_authors = []
             if 'authors' in book['volumeInfo']:
@@ -125,6 +128,8 @@ class BookSearchApiGoogle(View):
             if 'pageCount' not in book['volumeInfo']:
                 book['volumeInfo']['pageCount'] = 0
 
+            if 'language' not in book['volumeInfo']:
+                book['volumeInfo']['language'] = 'none'
 
             book, _ = Book.objects.get_or_create(
                 title=book['volumeInfo']['title'],
